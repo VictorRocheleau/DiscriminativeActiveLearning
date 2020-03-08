@@ -35,17 +35,17 @@ class extractor:
 
         Path('breakhis/train/{}/benign/'.format(level)).mkdir(parents=True, exist_ok=True)
         Path('breakhis/test/{}/benign/'.format(level)).mkdir(parents=True, exist_ok=True)
-        Path('breakhis/val/{}/benign/'.format(level)).mkdir(parents=True, exist_ok=True)
+        # Path('breakhis/val/{}/benign/'.format(level)).mkdir(parents=True, exist_ok=True)
 
         Path('breakhis/train/{}/malignant/'.format(level)).mkdir(parents=True, exist_ok=True)
         Path('breakhis/test/{}/malignant/'.format(level)).mkdir(parents=True, exist_ok=True)
-        Path('breakhis/val/{}/malignant/'.format(level)).mkdir(parents=True, exist_ok=True)
+        # Path('breakhis/val/{}/malignant/'.format(level)).mkdir(parents=True, exist_ok=True)
 
-        b_train_files, b_holdhout_files = train_test_split(benign_files, test_size=0.2)
-        m_train_files, m_holdhout_files = train_test_split(malignant_files, test_size=0.2)
+        b_train_files, b_test_files = train_test_split(benign_files, test_size=0.2)
+        m_train_files, m_test_files = train_test_split(malignant_files, test_size=0.2)
 
-        b_val_files, b_test_files = train_test_split(b_holdhout_files, test_size=0.5)
-        m_val_files, m_test_files = train_test_split(m_holdhout_files, test_size=0.5)
+        # b_val_files, b_test_files = train_test_split(b_holdhout_files, test_size=0.5)
+        # m_val_files, m_test_files = train_test_split(m_holdhout_files, test_size=0.5)
 
         # ________BENIGN________
         # BENIGN TRAIN SET
@@ -61,10 +61,10 @@ class extractor:
             copyfile(file, out_path)
 
         # BENIGN VAL SET
-        for i, file in enumerate(b_val_files):
-            print('Writing : {}'.format(file))
-            out_path = 'breakhis/val/{}/benign/benign_{}.png'.format(level, i)
-            copyfile(file, out_path)
+        # for i, file in enumerate(b_val_files):
+        #     print('Writing : {}'.format(file))
+        #     out_path = 'breakhis/val/{}/benign/benign_{}.png'.format(level, i)
+        #     copyfile(file, out_path)
 
         # ________MALIGNANT________
         # MALIGNANT TRAIN SET
@@ -80,10 +80,10 @@ class extractor:
             copyfile(file, out_path)
 
         # MALIGNANT VAL SET
-        for i, file in enumerate(m_val_files):
-            print('Writing : {}'.format(file))
-            out_path = 'breakhis/val/{}/malignant/malignant_{}.png'.format(level, i)
-            copyfile(file, out_path)
+        # for i, file in enumerate(m_val_files):
+        #     print('Writing : {}'.format(file))
+        #     out_path = 'breakhis/val/{}/malignant/malignant_{}.png'.format(level, i)
+        #     copyfile(file, out_path)
 
 
 if __name__ == "__main__":
