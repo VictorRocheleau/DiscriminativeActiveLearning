@@ -63,6 +63,7 @@ class DelayedModelCheckpoint(Callback):
         logs = logs or {}
 
         if epoch == 0:
+            print("Save initial model at epoch : {}".format(epoch))
             if self.weights:
                 self.model.save_weights(self.filepath, overwrite=True)
             else:
@@ -419,8 +420,8 @@ def train_breakhis(X_train, Y_train, X_validation, Y_validation, checkpoint_path
     model = get_VGG_model(input_shape=input_shape, labels=2)
     optimizer = optimizers.Adam(lr=0.0001)
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
-    callbacks = [DelayedModelCheckpoint(filepath=checkpoint_path, verbose=1, weights=True)]
-    epochs = 10
+    callbacks = [DelayedModelCheckpoint(filepath=checkpoint_path, verbose=1, weights=True, delay=10)]
+    epochs = 20
     batch_size = 32
     if gpu > 1:
         gpu_model = ModelMGPU(model, gpus=gpu)
