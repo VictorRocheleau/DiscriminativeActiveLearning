@@ -45,7 +45,7 @@ class DelayedModelCheckpoint(Callback):
     iterations to save time.
     """
 
-    def __init__(self, filepath, monitor='val_acc', delay=50, verbose=0, weights=False):
+    def __init__(self, filepath, monitor='val_accuracy', delay=50, verbose=0, weights=False):
 
         super(DelayedModelCheckpoint, self).__init__()
         self.monitor = monitor
@@ -61,7 +61,7 @@ class DelayedModelCheckpoint(Callback):
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
 
-        if self.monitor == 'val_acc':
+        if self.monitor == 'val_accuracy':
             current = logs.get(self.monitor)
             if current >= self.best and epoch > self.delay:
                 if self.verbose > 0:
@@ -386,7 +386,7 @@ def train_cifar10_model(X_train, Y_train, X_validation, Y_validation, checkpoint
     else:
         model.fit(X_train, Y_train,
                       epochs=400,
-                      batch_size=32,
+                      batch_size=100,
                       shuffle=True,
                       validation_data=(X_validation, Y_validation),
                       callbacks=callbacks,
@@ -395,6 +395,52 @@ def train_cifar10_model(X_train, Y_train, X_validation, Y_validation, checkpoint
         model.load_weights(checkpoint_path)
         return model
 
+def train_breakhis(X_train, Y_train, X_validation, Y_validation, checkpoint_path, gpu=1):
+    """
+        A function that trains and returns a VGG model on the labeled CIFAR-100 data.
+    """
+
+    if K.image_data_format() == 'channels_last':
+        input_shape = (224, 224, 3)
+    else:
+        input_shape = (3, 224, 224)
+
+    model = get_VGG_model(input_shape=input_shape, labels=2)
+    optimizer = optimizers.Adam(lr=0.0001)
+    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+    callbacks = [DelayedModelCheckpoint(filepath=checkpoint_path, verbose=1, weights=True)]
+
+    if gpu > 1:
+        gpu_model = ModelMGPU(model, gpus=gpu)
+        gpu_model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+        gpu_model.fit(X_train, Y_train,
+                      epochs=100,
+                      batch_size=32,
+                      shuffle=True,
+                      validation_data=(X_validation, Y_validation),
+                      callbacks=callbacks,
+                      verbose=2)
+
+        del gpu_model
+        del model
+
+        model = get_VGG_model(input_shape=input_shape, labels=100)
+        model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+        model.load_weights(checkpoint_path)
+
+        return model
+
+    else:
+        model.fit(X_train, Y_train,
+                  epochs=100,
+                  batch_size=32,
+                  shuffle=True,
+                  validation_data=(X_validation, Y_validation),
+                  callbacks=callbacks,
+                  verbose=2)
+
+        model.load_weights(checkpoint_path)
+        return model
 
 def train_cifar100_model(X_train, Y_train, X_validation, Y_validation, checkpoint_path, gpu=1):
     """

@@ -8,15 +8,16 @@ import os
 import sys
 import argparse
 from keras.utils import to_categorical
-from sklearn.datasets import load_boston, load_diabetes
-
+from pathlib import Path
 from models import *
 from query_methods import *
+from PIL import Image
+
 
 def parse_input():
     p = argparse.ArgumentParser()
     p.add_argument('experiment_index', type=int, help="index of current experiment")
-    p.add_argument('data_type', type=str, choices={'mnist', 'cifar10', 'cifar100'}, help="data type (mnist/cifar10/cifar100)")
+    p.add_argument('data_type', type=str, choices={'mnist', 'cifar10', 'cifar100', 'breakhis'}, help="data type (mnist/cifar10/cifar100)")
     p.add_argument('batch_size', type=int, help="active learning batch size")
     p.add_argument('initial_size', type=int, help="initial sample size for active learning")
     p.add_argument('iterations', type=int, help="number of active learning batches to sample")
@@ -32,7 +33,7 @@ def parse_input():
     p.add_argument('--initial_idx_path', '-idx', type=str,
                    default=None,
                    help="path to a folder with a pickle file with the initial indices of the labeled set")
-    p.add_argument('--gpu', '-gpu', type=int, default=2)
+    p.add_argument('--gpu', '-gpu', type=int, default=1)
     args = p.parse_args()
     return args
 
@@ -54,6 +55,49 @@ def load_batch(fpath, label_key='labels'):
 
     data = data.reshape(data.shape[0], 3, 32, 32)
     return data, labels
+
+
+def load_breakhis(level):
+
+    train_path = '/home/victor/PycharmProjects/DiscriminativeActiveLearning/breakhis/train/{}/'.format(level)
+    test_path = '/home/victor/PycharmProjects/DiscriminativeActiveLearning/breakhis/test/{}/'.format(level)
+
+    train_files = [str(path) for path in Path(train_path).rglob('*.png')]
+    test_files = [str(path) for path in Path(test_path).rglob('*.png')]
+
+    X_train, y_train = parse_breakhis_files(train_files)
+    X_test, y_test = parse_breakhis_files(test_files)
+
+    return (X_train, y_train), (X_test, y_test)
+
+
+def parse_breakhis_files(files):
+    X = np.zeros((len(files), 224, 224, 3))
+    y = np.zeros(len(files))
+
+    for i, file in enumerate(files):
+        img = Image.open(file)
+        img = center_crop((700, 460), (224, 224), img)
+        img = np.asarray(img)
+        X[i] = img
+        y[i] = get_breakhis_label(file)
+
+    return X, y
+
+
+def center_crop(input_shape, output_shape, img):
+    left = (input_shape[0] - output_shape[0]) / 2
+    top = (input_shape[1] - output_shape[1]) / 2
+    right = (input_shape[0] + output_shape[0]) / 2
+    bottom = (input_shape[1] + output_shape[1]) / 2
+    return img.crop((left, top, right, bottom))
+
+
+def get_breakhis_label(file):
+    if 'benign' in file:
+        return 0
+    else:
+        return 1
 
 
 def load_mnist():
@@ -88,7 +132,7 @@ def load_cifar_10():
     load and pre-process the CIFAR-10 data
     """
 
-    dirname = ''  # TODO: your path here
+    dirname = '/home/victor/PycharmProjects/DiscriminativeActiveLearning/cifar-10-batches-py'  # TODO: your path here
 
     num_train_samples = 50000
 
@@ -207,10 +251,18 @@ if __name__ == '__main__':
         (X_train, Y_train), (X_test, Y_test) = load_cifar_100()
         num_labels = 100
         if K.image_data_format() == 'channels_last':
-            input_shape = (32,32,3)
+            input_shape = (32, 32, 3)
         else:
             input_shape = (3, 32, 32)
         evaluation_function = train_cifar100_model
+    if args.data_type == 'breakhis':
+        (X_train, Y_train), (X_test, Y_test) = load_breakhis('40X')
+        num_labels = 2
+        if K.image_data_format() == 'channels_last':
+            input_shape = (224, 224, 3)
+        else:
+            input_shape = (3, 224, 224)
+        evaluation_function = train_breakhis
 
     # make categorical:
     Y_train = to_categorical(Y_train)
