@@ -62,13 +62,6 @@ class DelayedModelCheckpoint(Callback):
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
 
-        if epoch == 0:
-            print("Save initial model at epoch : {}".format(epoch))
-            if self.weights:
-                self.model.save_weights(self.filepath, overwrite=True)
-            else:
-                self.model.save(self.filepath, overwrite=True)
-
         if self.monitor == 'val_accuracy':
             current = logs.get(self.monitor)
             if current >= self.best and epoch > self.delay:
@@ -407,10 +400,6 @@ def train_breakhis(X_train, Y_train, X_validation, Y_validation, checkpoint_path
     """
         A function that trains and returns a VGG model on the labeled CIFAR-100 data.
     """
-
-    if os.path.isfile(checkpoint_path):
-        print("Removing previous cycle's weights file")
-        os.remove(checkpoint_path)
 
     if K.image_data_format() == 'channels_last':
         input_shape = (224, 224, 3)
