@@ -179,7 +179,7 @@ class BayesianUncertaintyEntropySampling(QueryMethod):
 
         predictions = np.zeros((unlabeled_idx.shape[0], self.num_labels))
         i = 0
-        batch_size = 30
+        batch_size = 50
         while i < unlabeled_idx.shape[0]: # split into iterations of 1000 due to memory constraints
 
             if i+batch_size > unlabeled_idx.shape[0]:
