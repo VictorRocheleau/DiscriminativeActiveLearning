@@ -437,7 +437,7 @@ def train_breakhis(X_train, Y_train, X_validation, Y_validation, checkpoint_path
         del gpu_model
         del model
 
-        model = get_VGG_model(input_shape=input_shape, labels=100)
+        model = get_VGG_model(input_shape=input_shape, labels=2)
         model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
         model.load_weights(checkpoint_path)
 
