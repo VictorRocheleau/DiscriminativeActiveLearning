@@ -179,16 +179,17 @@ class BayesianUncertaintyEntropySampling(QueryMethod):
 
         predictions = np.zeros((unlabeled_idx.shape[0], self.num_labels))
         i = 0
+        batch_size = 30
         while i < unlabeled_idx.shape[0]: # split into iterations of 1000 due to memory constraints
 
-            if i+1000 > unlabeled_idx.shape[0]:
+            if i+batch_size > unlabeled_idx.shape[0]:
                 preds, _ = self.dropout_predict(X_train[unlabeled_idx[i:], :])
                 predictions[i:] = preds
             else:
-                preds, _ = self.dropout_predict(X_train[unlabeled_idx[i:i+1000], :])
-                predictions[i:i+1000] = preds
+                preds, _ = self.dropout_predict(X_train[unlabeled_idx[i:i+batch_size], :])
+                predictions[i:i+batch_size] = preds
 
-            i += 1000
+            i += batch_size
 
         unlabeled_predictions = np.sum(predictions * np.log(predictions + 1e-10), axis=1)
         selected_indices = np.argpartition(unlabeled_predictions, amount)[:amount]
