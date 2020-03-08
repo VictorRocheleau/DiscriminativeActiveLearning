@@ -59,12 +59,12 @@ def load_batch(fpath, label_key='labels'):
 
 def load_breakhis(level):
 
-    if os.path.isdir('/home/victor/PycharmProjects/DiscriminativeActiveLearning/breakhis/train/'):
+    if os.path.isdir('/home/victor/PycharmProjects/DiscriminativeActiveLearning/breakhis/'):
         train_path = '/home/victor/PycharmProjects/DiscriminativeActiveLearning/breakhis/train/{}/'.format(level)
         test_path = '/home/victor/PycharmProjects/DiscriminativeActiveLearning/breakhis/test/{}/'.format(level)
     else:
-        train_path = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/breakhis/train/{}/'.format(level)
-        test_path = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/breakhis/test/{}/'.format(level)
+        train_path = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/data/breakhis/train/{}/'.format(level)
+        test_path = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/data/breakhis/test/{}/'.format(level)
 
     train_files = [str(path) for path in Path(train_path).rglob('*.png')]
     test_files = [str(path) for path in Path(test_path).rglob('*.png')]
