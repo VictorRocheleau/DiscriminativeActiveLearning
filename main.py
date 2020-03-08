@@ -12,7 +12,7 @@ from pathlib import Path
 from models import *
 from query_methods import *
 from PIL import Image
-
+from sklearn.utils import shuffle
 
 def parse_input():
     p = argparse.ArgumentParser()
@@ -59,9 +59,9 @@ def load_batch(fpath, label_key='labels'):
 
 def load_breakhis(level):
 
-    if os.path.isdir('/home/victor/PycharmProjects/DiscriminativeActiveLearning/breakhis/'):
-        train_path = '/home/victor/PycharmProjects/DiscriminativeActiveLearning/breakhis/train/{}/'.format(level)
-        test_path = '/home/victor/PycharmProjects/DiscriminativeActiveLearning/breakhis/test/{}/'.format(level)
+    if os.path.isdir('/home/victor/sys866/DiscriminativeActiveLearning/breakhis'):
+        train_path = '/home/victor/sys866/DiscriminativeActiveLearning/breakhis/train/{}/'.format(level)
+        test_path = '/home/victor/sys866/DiscriminativeActiveLearning/breakhis/test/{}/'.format(level)
     else:
         train_path = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/data/breakhis/train/{}/'.format(level)
         test_path = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/data/breakhis/test/{}/'.format(level)
@@ -86,6 +86,8 @@ def parse_breakhis_files(files):
         X[i] = img
         y[i] = get_breakhis_label(file)
 
+    for i in range(5):
+        X, y = shuffle(X, y, random_state=0)
     return X, y
 
 
