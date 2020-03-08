@@ -181,7 +181,7 @@ class BayesianUncertaintyEntropySampling(QueryMethod):
         i = 0
         batch_size = 50
         while i < unlabeled_idx.shape[0]: # split into iterations of 1000 due to memory constraints
-
+            print("Dropout predict : {}%".format((i/len(X_train))*100))
             if i+batch_size > unlabeled_idx.shape[0]:
                 preds, _ = self.dropout_predict(X_train[unlabeled_idx[i:], :])
                 predictions[i:] = preds
