@@ -407,10 +407,10 @@ def train_breakhis(X_train, Y_train, X_validation, Y_validation, checkpoint_path
         input_shape = (3, 224, 224)
 
     model = get_VGG_model(input_shape=input_shape, labels=2)
-    optimizer = optimizers.Adam(lr=0.0001)
+    optimizer = optimizers.Adam()
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     callbacks = [DelayedModelCheckpoint(filepath=checkpoint_path, verbose=1, weights=True, delay=0)]
-    epochs = 20
+    epochs = 50
     batch_size = 32
     if gpu > 1:
         gpu_model = ModelMGPU(model, gpus=gpu)
