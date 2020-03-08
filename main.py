@@ -353,7 +353,8 @@ if __name__ == '__main__':
 
     # create the checkpoint path:
     if not os.path.isdir(os.path.join(args.experiment_folder, 'models')):
-        os.mkdir(os.path.join(args.experiment_folder, 'models'))
+        # os.mkdir(os.path.join(args.experiment_folder, 'models'))
+        os.makedirs(os.path.join(args.experiment_folder, 'models'))
     model_folder = os.path.join(args.experiment_folder, 'models')
     if method2 is None:
         checkpoint_path = os.path.join(model_folder, '{alg}_{datatype}_{init}_{batch_size}_{idx}.hdf5'.format(
@@ -366,7 +367,9 @@ if __name__ == '__main__':
 
     # create the results path:
     if not os.path.isdir(os.path.join(args.experiment_folder, 'results')):
-        os.mkdir(os.path.join(args.experiment_folder, 'results'))
+        # os.mkdir(os.path.join(args.experiment_folder, 'results'))
+        os.makedirs(os.path.join(args.experiment_folder, 'results'))
+
     results_folder = os.path.join(args.experiment_folder, 'results')
     if method2 is None:
         results_path = os.path.join(results_folder, '{alg}_{datatype}_{init}_{batch_size}_{idx}.pkl'.format(

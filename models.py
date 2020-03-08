@@ -52,7 +52,7 @@ class DelayedModelCheckpoint(Callback):
         self.verbose = verbose
         self.filepath = filepath
         self.delay = delay
-        if self.monitor == 'val_acc':
+        if self.monitor == 'val_accuracy':
             self.best = -np.Inf
         else:
             self.best = np.Inf
