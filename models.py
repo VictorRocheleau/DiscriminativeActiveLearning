@@ -4,7 +4,7 @@ model for MNIST, a VGG model for CIFAR and a multilayer perceptron model for dic
 """
 
 import numpy as np
-
+import os
 from keras.callbacks import Callback
 from keras.models import Sequential, Model
 from keras.layers import Dense, Dropout, Flatten, Activation, Input, UpSampling2D
@@ -14,6 +14,7 @@ from keras import regularizers
 from keras import backend as K
 from keras.models import load_model
 from keras.utils import to_categorical, multi_gpu_model
+
 
 class DiscriminativeEarlyStopping(Callback):
     """
@@ -60,6 +61,12 @@ class DelayedModelCheckpoint(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
+
+        if epoch == 0:
+            if self.weights:
+                self.model.save_weights(self.filepath, overwrite=True)
+            else:
+                self.model.save(self.filepath, overwrite=True)
 
         if self.monitor == 'val_accuracy':
             current = logs.get(self.monitor)
@@ -395,10 +402,14 @@ def train_cifar10_model(X_train, Y_train, X_validation, Y_validation, checkpoint
         model.load_weights(checkpoint_path)
         return model
 
-def train_breakhis(X_train, Y_train, X_validation, Y_validation, checkpoint_path, gpu=1):
+def train_breakhis(X_train, Y_train, X_validation, Y_validation, checkpoint_path, gpu=2):
     """
         A function that trains and returns a VGG model on the labeled CIFAR-100 data.
     """
+
+    if os.path.isfile(checkpoint_path):
+        print("Removing previous cycle's weights file")
+        os.remove(checkpoint_path)
 
     if K.image_data_format() == 'channels_last':
         input_shape = (224, 224, 3)
@@ -409,7 +420,7 @@ def train_breakhis(X_train, Y_train, X_validation, Y_validation, checkpoint_path
     optimizer = optimizers.Adam(lr=0.0001)
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     callbacks = [DelayedModelCheckpoint(filepath=checkpoint_path, verbose=1, weights=True)]
-    epochs = 50
+    epochs = 10
     batch_size = 32
     if gpu > 1:
         gpu_model = ModelMGPU(model, gpus=gpu)
