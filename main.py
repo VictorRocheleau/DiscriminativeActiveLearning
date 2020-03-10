@@ -403,6 +403,7 @@ if __name__ == '__main__':
     print("Test Accuracy Is " + str(acc))
     for i in range(args.iterations):
 
+        print("Labeling iter {}/{}".format(i, args.iterations))
         # get the new indices from the algorithm
         old_labeled = np.copy(labeled_idx)
         labeled_idx = query_method.query(X_train, Y_train, labeled_idx, args.batch_size)

@@ -14,7 +14,7 @@ from keras import regularizers
 from keras import backend as K
 from keras.models import load_model
 from keras.utils import to_categorical, multi_gpu_model
-
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 class DiscriminativeEarlyStopping(Callback):
     """
@@ -407,14 +407,17 @@ def train_breakhis(X_train, Y_train, X_validation, Y_validation, checkpoint_path
         input_shape = (3, 224, 224)
 
     model = get_VGG_model(input_shape=input_shape, labels=2)
-    optimizer = optimizers.Adam()
+    optimizer = optimizers.Adam(lr=0.0001)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
-    callbacks = [DelayedModelCheckpoint(filepath=checkpoint_path, verbose=1, weights=True, delay=0)]
-    epochs = 50
-    batch_size = 32
+    callbacks = [DelayedModelCheckpoint(filepath=checkpoint_path, verbose=1, weights=True)]
+    #callbacks = [
+    #        ModelCheckpoint(checkpoint_path, verbose=1, monitor='val_acc', save_best_only=True, save_weights_only=True),
+    #        EarlyStopping(monitor='val_acc', patience=15)]
+    epochs = 100
+    batch_size = 50
     if gpu > 1:
         gpu_model = ModelMGPU(model, gpus=gpu)
-        gpu_model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+        gpu_model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['acc'])
         gpu_model.fit(X_train, Y_train,
                       epochs=epochs,
                       batch_size=batch_size,
@@ -427,7 +430,7 @@ def train_breakhis(X_train, Y_train, X_validation, Y_validation, checkpoint_path
         del model
 
         model = get_VGG_model(input_shape=input_shape, labels=2)
-        model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+        model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['acc'])
         model.load_weights(checkpoint_path)
 
         return model

@@ -1,3 +1,3 @@
-python3 main.py 0 "breakhis" 100 100 15 "Random" "out"
-python3 main.py 1 "breakhis" 100 100 15 "BayesianEntropy" "out"
-python3 main.py 2 "breakhis" 100 100 15 "CoreSet" "out"
+python3 main.py 3 "breakhis" 100 100 8 "Random" "out/ten/"
+python3 main.py 3 "breakhis" 100 100 8 "Bayesian" "out/ten/"
+python3 main.py 3 "breakhis" 100 100 8 "CoreSet" "out/ten/"
