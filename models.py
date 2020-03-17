@@ -226,6 +226,82 @@ def get_VGG_model(input_shape, labels=10):
 
     return model
 
+def get_VGG_11_model(input_shape, labels=10):
+    """
+    A VGG model for CIFAR.
+    """
+
+    weight_decay = 0.0005
+    model = Sequential()
+
+    model.add(Conv2D(64, (3, 3), padding='same',
+                     input_shape=input_shape, kernel_regularizer=regularizers.l2(weight_decay)))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.3))
+    model.add(Conv2D(64, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Conv2D(128, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    model.add(Conv2D(128, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Conv2D(256, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    model.add(Conv2D(256, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    model.add(Conv2D(256, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Conv2D(512, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    model.add(Conv2D(512, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    model.add(Conv2D(512, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Conv2D(512, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    model.add(Conv2D(512, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    model.add(Conv2D(512, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.5))
+
+    model.add(Flatten())
+    model.add(Dense(1024, kernel_regularizer=regularizers.l2(weight_decay), name='embedding'))
+    model.add(Activation('relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.5))
+    model.add(Dense(labels, activation='softmax', name='softmax'))
+
+    return model
+
 
 def get_autoencoder_model(input_shape, labels=10):
     """
@@ -402,35 +478,35 @@ def train_breakhis(X_train, Y_train, X_validation, Y_validation, checkpoint_path
     """
 
     if K.image_data_format() == 'channels_last':
-        input_shape = (224, 224, 3)
+        input_shape = (150, 150, 3)
     else:
-        input_shape = (3, 224, 224)
+        input_shape = (3, 150, 150)
 
     model = get_VGG_model(input_shape=input_shape, labels=2)
-    optimizer = optimizers.Adam(lr=0.0001)
+    optimizer = optimizers.Adam()
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
-    callbacks = [DelayedModelCheckpoint(filepath=checkpoint_path, verbose=1, weights=True)]
+    callbacks = [DelayedModelCheckpoint(filepath=checkpoint_path, verbose=1, weights=True, delay=10)]
     #callbacks = [
     #        ModelCheckpoint(checkpoint_path, verbose=1, monitor='val_acc', save_best_only=True, save_weights_only=True),
     #        EarlyStopping(monitor='val_acc', patience=15)]
-    epochs = 100
-    batch_size = 50
+    epochs = 120
+    batch_size = 120
     if gpu > 1:
         gpu_model = ModelMGPU(model, gpus=gpu)
-        gpu_model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['acc'])
+        gpu_model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
         gpu_model.fit(X_train, Y_train,
                       epochs=epochs,
                       batch_size=batch_size,
                       shuffle=True,
                       validation_data=(X_validation, Y_validation),
                       callbacks=callbacks,
-                      verbose=2)
+                      verbose=1)
 
         del gpu_model
         del model
 
         model = get_VGG_model(input_shape=input_shape, labels=2)
-        model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['acc'])
+        model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
         model.load_weights(checkpoint_path)
 
         return model
@@ -442,7 +518,7 @@ def train_breakhis(X_train, Y_train, X_validation, Y_validation, checkpoint_path
                   shuffle=True,
                   validation_data=(X_validation, Y_validation),
                   callbacks=callbacks,
-                  verbose=2)
+                  verbose=1)
 
         model.load_weights(checkpoint_path)
         return model

@@ -14,6 +14,8 @@ from query_methods import *
 from PIL import Image
 from sklearn.utils import shuffle
 
+np.random.seed(0)
+
 def parse_input():
     p = argparse.ArgumentParser()
     p.add_argument('experiment_index', type=int, help="index of current experiment")
@@ -56,6 +58,21 @@ def load_batch(fpath, label_key='labels'):
     data = data.reshape(data.shape[0], 3, 32, 32)
     return data, labels
 
+def load_breakhis_from_np(level, mode):
+    assert mode in ['single', 'five', 'ten']
+    
+    path_format = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/data/breakhis/numpy/{}/'.format(level)
+    x_train_file = 'X_train_{}.npy'.format(mode)
+    y_train_file = 'y_train_{}.npy'.format(mode)    
+    x_test_file = 'X_test_{}.npy'.format(mode)  
+    y_test_file = 'y_test_{}.npy'.format(mode)
+    
+    X_train = np.load(path_format + x_train_file)
+    y_train = np.load(path_format + y_train_file)
+    X_test = np.load(path_format + x_test_file)
+    y_test = np.load(path_format + y_test_file)
+    
+    return (X_train, y_train), (X_test, y_test)       
 
 def load_breakhis(level):
 
@@ -89,7 +106,6 @@ def parse_breakhis_files(files):
     for i in range(5):
         X, y = shuffle(X, y, random_state=0)
     return X, y
-
 
 def center_crop(input_shape, output_shape, img):
     left = (input_shape[0] - output_shape[0]) / 2
@@ -232,6 +248,8 @@ def evaluate_sample(training_function, X_train, Y_train, X_test, Y_test, checkpo
 
 
 if __name__ == '__main__':
+    
+    np.random.seed(0)
 
     # parse the arguments:
     args = parse_input()
@@ -262,14 +280,20 @@ if __name__ == '__main__':
             input_shape = (3, 32, 32)
         evaluation_function = train_cifar100_model
     if args.data_type == 'breakhis':
-        (X_train, Y_train), (X_test, Y_test) = load_breakhis('40X')
+#         (X_train, Y_train), (X_test, Y_test) = load_breakhis('40X')
+        (X_train, Y_train), (X_test, Y_test) = load_breakhis_from_np('200X', 'five')
+                                                                     
+        print('X_train shape : {}'.format(X_train.shape))
+        print('X_test shape : {}'.format(X_test.shape))
+                                                                     
         num_labels = 2
         if K.image_data_format() == 'channels_last':
-            input_shape = (224, 224, 3)
+            input_shape = (150, 150, 3)
         else:
-            input_shape = (3, 224, 224)
+            input_shape = (3, 150, 150)
         evaluation_function = train_breakhis
 
+                                                                      
     # make categorical:
     Y_train = to_categorical(Y_train)
     Y_test = to_categorical(Y_test)
