@@ -7,3 +7,7 @@ __pycache__/
 nohup.out
 .ipynb_checkpoints/
 data/.ipynb_checkpoints/
+data/ICIAR2018_BACH_Challenge.tar.xz
+data/ICIAR2018_BACH_Challenge/
+data/iciar/
+

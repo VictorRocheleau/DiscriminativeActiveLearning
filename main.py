@@ -19,7 +19,7 @@ np.random.seed(0)
 def parse_input():
     p = argparse.ArgumentParser()
     p.add_argument('experiment_index', type=int, help="index of current experiment")
-    p.add_argument('data_type', type=str, choices={'mnist', 'cifar10', 'cifar100', 'breakhis'}, help="data type (mnist/cifar10/cifar100)")
+    p.add_argument('data_type', type=str, choices={'mnist', 'cifar10', 'cifar100', 'breakhis', 'iciar'}, help="data type (mnist/cifar10/cifar100)")
     p.add_argument('batch_size', type=int, help="active learning batch size")
     p.add_argument('initial_size', type=int, help="initial sample size for active learning")
     p.add_argument('iterations', type=int, help="number of active learning batches to sample")
@@ -57,6 +57,23 @@ def load_batch(fpath, label_key='labels'):
 
     data = data.reshape(data.shape[0], 3, 32, 32)
     return data, labels
+
+def load_iciar(mode):
+    assert mode in ['single', 'five', 'ten']
+    
+    path = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/data/iciar/'
+    
+    x_train_file = 'X_train_{}.npy'.format(mode)
+    y_train_file = 'y_train_{}.npy'.format(mode)    
+    x_test_file = 'X_test_{}.npy'.format(mode)  
+    y_test_file = 'y_test_{}.npy'.format(mode)
+    
+    X_train = np.load(path + x_train_file)
+    y_train = np.load(path + y_train_file)
+    X_test = np.load(path + x_test_file)
+    y_test = np.load(path + y_test_file)
+    
+    return (X_train, y_train), (X_test, y_test)
 
 def load_breakhis_from_np(level, mode):
     assert mode in ['single', 'five', 'ten']
@@ -292,6 +309,17 @@ if __name__ == '__main__':
         else:
             input_shape = (3, 150, 150)
         evaluation_function = train_breakhis
+    if args.data_type == 'iciar':
+        (X_train, Y_train), (X_test, Y_test) = load_iciar('ten')
+
+        print('X_train shape : {}'.format(X_train.shape))
+        print('X_test shape : {}'.format(X_test.shape))
+
+        num_labels = 4
+        if K.image_data_format() == 'channels_last':
+            input_shape = (150, 150, 3)
+        else:
+            input_shape = (3, 150, 150)
 
                                                                       
     # make categorical:
