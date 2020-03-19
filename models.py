@@ -523,6 +523,57 @@ def train_breakhis(X_train, Y_train, X_validation, Y_validation, checkpoint_path
         model.load_weights(checkpoint_path)
         return model
 
+def train_iciar(X_train, Y_train, X_validation, Y_validation, checkpoint_path, gpu=2):
+    """
+        A function that trains and returns a VGG model on the labeled CIFAR-100 data.
+    """
+
+    if K.image_data_format() == 'channels_last':
+        input_shape = (150, 150, 3)
+    else:
+        input_shape = (3, 150, 150)
+
+    model = get_VGG_model(input_shape=input_shape, labels=4)
+    optimizer = optimizers.Adam()
+    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+    callbacks = [DelayedModelCheckpoint(filepath=checkpoint_path, verbose=1, weights=True, delay=10)]
+    #callbacks = [
+    #        ModelCheckpoint(checkpoint_path, verbose=1, monitor='val_acc', save_best_only=True, save_weights_only=True),
+    #        EarlyStopping(monitor='val_acc', patience=15)]
+    epochs = 120
+    batch_size = 120
+    if gpu > 1:
+        gpu_model = ModelMGPU(model, gpus=gpu)
+        gpu_model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+        gpu_model.fit(X_train, Y_train,
+                      epochs=epochs,
+                      batch_size=batch_size,
+                      shuffle=True,
+                      validation_data=(X_validation, Y_validation),
+                      callbacks=callbacks,
+                      verbose=1)
+
+        del gpu_model
+        del model
+
+        model = get_VGG_model(input_shape=input_shape, labels=4)
+        model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+        model.load_weights(checkpoint_path)
+
+        return model
+
+    else:
+        model.fit(X_train, Y_train,
+                  epochs=epochs,
+                  batch_size=batch_size,
+                  shuffle=True,
+                  validation_data=(X_validation, Y_validation),
+                  callbacks=callbacks,
+                  verbose=1)
+
+        model.load_weights(checkpoint_path)
+        return model
+
 def train_cifar100_model(X_train, Y_train, X_validation, Y_validation, checkpoint_path, gpu=1):
     """
     A function that trains and returns a VGG model on the labeled CIFAR-100 data.

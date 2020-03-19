@@ -320,7 +320,7 @@ if __name__ == '__main__':
             input_shape = (150, 150, 3)
         else:
             input_shape = (3, 150, 150)
-
+        evaluation_function = train_iciar
                                                                       
     # make categorical:
     Y_train = to_categorical(Y_train)
