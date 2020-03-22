@@ -59,7 +59,7 @@ def load_batch(fpath, label_key='labels'):
     return data, labels
 
 def load_iciar(mode):
-    assert mode in ['single', 'five', 'ten']
+    assert mode in ['single', 'five', 'ten', '48']
     
     path = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/data/iciar/'
     
@@ -310,7 +310,7 @@ if __name__ == '__main__':
             input_shape = (3, 150, 150)
         evaluation_function = train_breakhis
     if args.data_type == 'iciar':
-        (X_train, Y_train), (X_test, Y_test) = load_iciar('ten')
+        (X_train, Y_train), (X_test, Y_test) = load_iciar('48')
 
         print('X_train shape : {}'.format(X_train.shape))
         print('X_test shape : {}'.format(X_test.shape))
