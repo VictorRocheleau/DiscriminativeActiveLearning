@@ -14,8 +14,6 @@ from query_methods import *
 from PIL import Image
 from sklearn.utils import shuffle
 
-np.random.seed(0)
-
 def parse_input():
     p = argparse.ArgumentParser()
     p.add_argument('experiment_index', type=int, help="index of current experiment")
@@ -78,7 +76,9 @@ def load_iciar(mode):
 def load_breakhis_from_np(level, mode):
     assert mode in ['single', 'five', 'ten']
     
+#     path_format = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/data/breakhis/numpy_300/{}/'.format(level)
     path_format = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/data/breakhis/numpy/{}/'.format(level)
+
     x_train_file = 'X_train_{}.npy'.format(mode)
     y_train_file = 'y_train_{}.npy'.format(mode)    
     x_test_file = 'X_test_{}.npy'.format(mode)  
@@ -265,8 +265,6 @@ def evaluate_sample(training_function, X_train, Y_train, X_test, Y_test, checkpo
 
 
 if __name__ == '__main__':
-    
-    np.random.seed(0)
 
     # parse the arguments:
     args = parse_input()
@@ -310,7 +308,7 @@ if __name__ == '__main__':
             input_shape = (3, 150, 150)
         evaluation_function = train_breakhis
     if args.data_type == 'iciar':
-        (X_train, Y_train), (X_test, Y_test) = load_iciar('48')
+        (X_train, Y_train), (X_test, Y_test) = load_iciar('ten')
 
         print('X_train shape : {}'.format(X_train.shape))
         print('X_test shape : {}'.format(X_test.shape))
@@ -328,9 +326,12 @@ if __name__ == '__main__':
 
     # load the indices:
     if args.initial_idx_path is not None:
-        idx_path = os.path.join(args.initial_idx_path, '{exp}_{size}_{data}.pkl'.format(exp=args.experiment_index, size=args.initial_size, data=args.data_type))
-        with open(idx_path, 'rb') as f:
-            labeled_idx = pickle.load(f)
+       # idx_path = os.path.join(args.initial_idx_path, '{exp}_{size}_{data}.pkl'.format(exp=args.experiment_index, size=args.initial_size, data=args.data_type))
+       # with open(idx_path, 'rb') as f:
+       #     labeled_idx = pickle.load(f)
+
+        labeled_idx = loaded = np.load(args.initial_idx_path, allow_pickle=True)
+        print('Using provided initial indices of size : ', labeled_idx.shape[0])
     else:
         print("No Initial Indices Found - Drawing Random Indices...")
         labeled_idx = np.random.choice(X_train.shape[0], args.initial_size, replace=False)

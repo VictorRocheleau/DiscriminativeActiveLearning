@@ -1,8 +1,23 @@
-python3 main.py 3 "iciar" 400 399 7 "Bayesian" "out/exp_iciar/" --gpu 1
-python3 main.py 4 "iciar" 400 399 7 "Bayesian" "out/exp_iciar/" --gpu 1
+python3 main.py 0 "breakhis" 100 100 19 "Random" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 1 "breakhis" 100 100 19 "Random" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 2 "breakhis" 100 100 19 "Random" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 3 "breakhis" 100 100 19 "Random" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 4 "breakhis" 100 100 19 "Random" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
 
-python3 main.py 3 "iciar" 400 399 7 "CoreSet" "out/exp_iciar/" --gpu 1
-python3 main.py 4 "iciar" 400 399 7 "CoreSet" "out/exp_iciar/" --gpu 1
+python3 main.py 0 "breakhis" 100 100 19 "Bayesian" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 1 "breakhis" 100 100 19 "Bayesian" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 2 "breakhis" 100 100 19 "Bayesian" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 3 "breakhis" 100 100 19 "Bayesian" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 4 "breakhis" 100 100 19 "Bayesian" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
 
-python3 main.py 3 "iciar" 400 399 7 "Random" "out/exp_iciar/" --gpu 1
-python3 main.py 4 "iciar" 400 399 7 "Random" "out/exp_iciar/" --gpu 1
+python3 main.py 0 "breakhis" 100 100 19 "CoreSet" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 1 "breakhis" 100 100 19 "CoreSet" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 2 "breakhis" 100 100 19 "CoreSet" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 3 "breakhis" 100 100 19 "CoreSet" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 4 "breakhis" 100 100 19 "CoreSet" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+
+python3 main.py 0 "breakhis" 100 100 19 "Uncertainty" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 1 "breakhis" 100 100 19 "Uncertainty" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 2 "breakhis" 100 100 19 "Uncertainty" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 3 "breakhis" 100 100 19 "Uncertainty" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
+python3 main.py 4 "breakhis" 100 100 19 "Uncertainty" "out/exp_break_intit_2000/" --gpu 1 -idx data/break_balanced_100_start.pkl
