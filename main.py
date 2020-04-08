@@ -76,7 +76,6 @@ def load_iciar(mode):
 def load_breakhis_from_np(level, mode):
     assert mode in ['single', 'five', 'ten']
     
-#     path_format = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/data/breakhis/numpy_300/{}/'.format(level)
     path_format = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/data/breakhis/numpy/{}/'.format(level)
 
     x_train_file = 'X_train_{}.npy'.format(mode)
@@ -89,54 +88,7 @@ def load_breakhis_from_np(level, mode):
     X_test = np.load(path_format + x_test_file)
     y_test = np.load(path_format + y_test_file)
     
-    return (X_train, y_train), (X_test, y_test)       
-
-def load_breakhis(level):
-
-    if os.path.isdir('/home/victor/sys866/DiscriminativeActiveLearning/breakhis'):
-        train_path = '/home/victor/sys866/DiscriminativeActiveLearning/breakhis/train/{}/'.format(level)
-        test_path = '/home/victor/sys866/DiscriminativeActiveLearning/breakhis/test/{}/'.format(level)
-    else:
-        train_path = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/data/breakhis/train/{}/'.format(level)
-        test_path = '/home/ens/AM90950/sys866/DiscriminativeActiveLearning/data/breakhis/test/{}/'.format(level)
-
-    train_files = [str(path) for path in Path(train_path).rglob('*.png')]
-    test_files = [str(path) for path in Path(test_path).rglob('*.png')]
-
-    X_train, y_train = parse_breakhis_files(train_files)
-    X_test, y_test = parse_breakhis_files(test_files)
-
     return (X_train, y_train), (X_test, y_test)
-
-
-def parse_breakhis_files(files):
-    X = np.zeros((len(files), 224, 224, 3))
-    y = np.zeros(len(files))
-
-    for i, file in enumerate(files):
-        img = Image.open(file)
-        img = center_crop((700, 460), (224, 224), img)
-        img = np.asarray(img)
-        X[i] = img
-        y[i] = get_breakhis_label(file)
-
-    for i in range(5):
-        X, y = shuffle(X, y, random_state=0)
-    return X, y
-
-def center_crop(input_shape, output_shape, img):
-    left = (input_shape[0] - output_shape[0]) / 2
-    top = (input_shape[1] - output_shape[1]) / 2
-    right = (input_shape[0] + output_shape[0]) / 2
-    bottom = (input_shape[1] + output_shape[1]) / 2
-    return img.crop((left, top, right, bottom))
-
-
-def get_breakhis_label(file):
-    if 'benign' in file:
-        return 0
-    else:
-        return 1
 
 
 def load_mnist():

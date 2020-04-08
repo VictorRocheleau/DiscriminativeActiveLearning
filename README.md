@@ -1,4 +1,81 @@
-# Discriminative Active Learning
+# Active Learning experiments with histology image classification (Fork)
+
+This repository was forked from https://github.com/dsgissin/DiscriminativeActiveLearning in order to carry out active 
+learning experiments on histology images data for a class project. I added the necessary modifications in main.py and model.py in order 
+to fetch and use the relevant images for my experiments.
+
+## Histology datasets
+
+In my experiment I used the [BreakHis](https://web.inf.ufpr.br/vri/databases/breast-cancer-histopathological-database-breakhis/)
+ and [BACH ICIAR 2018](https://iciar2018-challenge.grand-challenge.org/) datsets, which are both publicly available 
+ breast histology datasets. I added the data/ directory to the project in order to organize the data.
+
+To work with those datasets you must first download them, and then place the extracted directories as is in the data directory. 
+Because I find the BreakHis directory hierarchy somewhat convoluted, I added the break_split.py script, which performs the train/test split 
+for each magnification level and copies the files in the breakhis/test/ and breakhis/train/ directories. 
+Because the structure of the iciar dataset is much simpler, I used the provided hierarchy as is.
+
+In order to extract the patches for the BreakHis dataset I added the extract_patches_breakhis.ipynb notebook, which extracts patches
+per image and then stores the matrices in the numpy array format in breakhis/numpy/ for each magnification while preserving the train/test split.
+I also created the extract_patches_iciar.ipynb notebook, which performs the train/test split, extracts the patches, and then save the resulting numpy
+arrays in the iciar/ directory.
+
+Patches can be extracted with different "modes": single, five or ten. "Single" mode extracts a center crop, "five" extracts 
+four corners and a center crop, "ten" is the same as "five" but augments the data by an horizontal flip. To use different modes, 
+please see the usage of load_iciar and load_breakhis_from_np methods that were added in main.py. 
+
+At the end of both notebooks you can pickle a numpy array containing the indices of an initial balanced labeled pool, which you can then 
+pass as a parameter -idx to run the experiments. 
+
+The data directory should have this structure after these operations.
+
+```
+.
+├── data
+│   ├── BreakHis_v1
+│   │   └── histology_slides
+│   │       └── breast
+│   │           ├── benign
+│   │           ├── malignant
+│   │           └── ...
+│   ├── ICIAR2018_BACH_Challenge
+│   │   └── photos
+│   │       ├── Benign
+│   │       ├── InSitu
+│   │       ├── Invasive
+│   │       ├── Normal
+│   │       └── ...
+│   ├── breakhis
+│   │   ├── numpy
+│   │   |   ├── 100X
+│   │   |   ├── 200X
+│   │   |   ├── 400X
+│   │   |   └── 40X
+│   │   ├── test
+│   │   |   ├── 100X
+│   │   |   ├── 200X
+│   │   |   ├── 400X
+│   │   |   └── 40X
+│   │   └── train
+│   │       ├── 100X
+│   │       ├── 200X
+│   │       ├── 400X
+│   │       └── 40X
+│   ├── iciar
+│   │   └── ...
+│   └── ...
+└── ...
+```
+
+I left the original readme unchanged below as everything in it still holds true. To use the histology datasets, simply use 
+"breakhis" or "iciar" as the dataset command line parameter, like so:
+
+```
+python3 main.py 0 "breakhis" 100 100 20 "Random" "/path/to/experiment/folder" -idx "/path/to/folder/with/initial/index/file"
+python3 main.py 0 "iciar" 100 100 20 "Random" "/path/to/experiment/folder" -idx "/path/to/folder/with/initial/index/file"
+```
+
+# Discriminative Active Learning (Original)
 
 This repository contains the code used to run the deep active learning experiments detailed in our paper - https://arxiv.org/abs/1907.06347
 
