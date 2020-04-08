@@ -2,7 +2,8 @@
 
 This repository was forked from https://github.com/dsgissin/DiscriminativeActiveLearning in order to carry out active 
 learning experiments on histology images data for a class project. I added the necessary modifications in main.py and model.py in order 
-to fetch and use the relevant images for my experiments.
+to fetch and use the relevant images for my experiments. I would like to thank the authors of the original repository 
+for providing the implementations of so many active learning methods in a simple and user friendly framework.
 
 ## Histology datasets
 
